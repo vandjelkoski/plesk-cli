@@ -1,0 +1,48 @@
+name: plesk-cli
+help: Sample application
+version: 0.1.0
+
+environment_variables:
+  - name: DOMAIN_NAME
+    help: Plesk domain name
+commands:
+- name: login
+  help: Login to Plesk
+  environment_variables:
+    - name: LOGIN_NAME
+      help: Plesk username
+      required: true
+    - name: PASSWD
+      help: Plesk password
+      required: true
+- name: records
+  commands:
+    - name: list
+      args:
+        - name: domain_id
+    - name: update
+      args:
+        - name: record_id
+          required: true
+        - name: host
+          required: true
+        - name: ip
+          required: true
+        - name: domain_id
+        - name: type
+          default: "A"
+        - name: ttl
+          default: "300"
+    - name: save
+      args:
+        - name: domain_id
+- name: domain
+  commands:
+    - name: id
+      args:
+        - name: domain_name
+          required: true
+
+
+
+
