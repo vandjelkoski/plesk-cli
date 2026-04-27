@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Ruby (required for Bashly)
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.1"
+
+      - name: Install Bashly
+        run: gem install bashly
+
+      - name: Generate CLI
+        run: bashly generate
+
+      - name: Verify output exists
+        run: |
+          test -f bin/plesk-cli
+          chmod +x bin/plesk-cli
