@@ -1,7 +1,9 @@
 name: plesk-cli
-help: Sample application
+help: Plesk commandline http client
 version: 0.1.0
-
+dependencies:
+  - curl
+  - jq
 environment_variables:
   - name: DOMAIN_NAME
     help: Plesk domain name

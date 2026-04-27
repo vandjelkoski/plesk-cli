@@ -1,0 +1,48 @@
+name: Build and Release plesk-cli
+
+on:
+  push:
+    tags:
+      - 'v*'   # triggers on tags like v1.0.0
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Ruby (required for Bashly)
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1'
+
+      - name: Install Bashly
+        run: gem install bashly
+
+      - name: Generate CLI
+        run: bashly generate
+
+      - name: Prepare artifact
+        run: |
+          mkdir -p dist
+          chmod +x plesk-cli
+          cp plesk-cli dist/plesk-cli
+
+      - name: Create checksum
+        run: |
+          cd dist
+          sha256sum plesk-cli > checksums.txt
+
+      - name: Create GitHub Release (if not exists)
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/plesk-cli
+            dist/checksums.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
