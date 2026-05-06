@@ -26,5 +26,5 @@ jobs:
 
       - name: Verify output exists
         run: |
-          test -f bin/plesk-cli
-          chmod +x bin/plesk-cli
+          test -f plesk-cli
+          chmod +x plesk-cli
