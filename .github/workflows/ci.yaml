@@ -36,7 +36,8 @@ jobs:
           DOMAIN_ID=$(./plesk-cli domain id "$DOMAIN_NAME")
           echo "Domain ID: $DOMAIN_ID"
           echo "DOMAIN_ID=$DOMAIN_ID" >> "$GITHUB_ENV"
-          echo "DUMMY_HOST=dummy.$DOMAIN_NAME." >> "$GITHUB_ENV"
+          echo "TEST_HOST=dummy" >> "$GITHUB_ENV"
+          echo "TEST_FQDN=dummy.$DOMAIN_NAME." >> "$GITHUB_ENV"
 
       - name: List records (raw output for inspection)
         run: ./plesk-cli records list "$DOMAIN_ID" | jq '.'
@@ -44,8 +45,8 @@ jobs:
       - name: Find dummy record and update IP
         run: |
           RECORDS=$(./plesk-cli records list "$DOMAIN_ID")
-          RECORD_ID=$(echo "$RECORDS" | jq -r --arg h "$DUMMY_HOST" 'select(.host==$h) | .id' | head -1)
-          CURRENT_IP=$(echo "$RECORDS" | jq -r --arg h "$DUMMY_HOST" 'select(.host==$h) | .value' | head -1)
+          RECORD_ID=$(echo "$RECORDS" | jq -r --arg h "$TEST_FQDN" 'select(.host==$h) | .id' | head -1)
+          CURRENT_IP=$(echo "$RECORDS" | jq -r --arg h "$TEST_FQDN" 'select(.host==$h) | .value' | head -1)
 
           if [ "$CURRENT_IP" = "192.0.2.1" ]; then TARGET_IP="192.0.2.2"; else TARGET_IP="192.0.2.1"; fi
 
@@ -54,14 +55,14 @@ jobs:
           echo "Target IP : $TARGET_IP"
           echo "TARGET_IP=$TARGET_IP" >> "$GITHUB_ENV"
 
-          ./plesk-cli records update "$RECORD_ID" "$DUMMY_HOST" "$TARGET_IP" "$DOMAIN_ID"
+          ./plesk-cli records update "$RECORD_ID" "$TEST_HOST" "$TARGET_IP" "$DOMAIN_ID"
 
       - name: Save records
         run: ./plesk-cli records save "$DOMAIN_ID"
 
       - name: Verify IP change in records list
         run: |
-          UPDATED_IP=$(./plesk-cli records list "$DOMAIN_ID" | jq -r --arg h "$DUMMY_HOST" 'select(.host==$h) | .value' | head -1)
+          UPDATED_IP=$(./plesk-cli records list "$DOMAIN_ID" | jq -r --arg h "$TEST_FQDN" 'select(.host==$h) | .value' | head -1)
           echo "Updated IP : $UPDATED_IP"
           echo "Expected IP: $TARGET_IP"
           [ "$UPDATED_IP" = "$TARGET_IP" ]
