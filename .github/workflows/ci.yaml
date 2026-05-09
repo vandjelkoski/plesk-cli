@@ -12,7 +12,6 @@ jobs:
       LOGIN_NAME: ${{ secrets.PLESK_LOGIN_NAME }}
       PASSWD: ${{ secrets.PLESK_PASSWD }}
       DOMAIN_NAME: ${{ secrets.PLESK_DOMAIN_NAME }}
-      DUMMY_HOST: dummy
 
     steps:
       - name: Checkout repository
@@ -37,6 +36,7 @@ jobs:
           DOMAIN_ID=$(./plesk-cli domain id "$DOMAIN_NAME")
           echo "Domain ID: $DOMAIN_ID"
           echo "DOMAIN_ID=$DOMAIN_ID" >> "$GITHUB_ENV"
+          echo "DUMMY_HOST=dummy.$DOMAIN_NAME." >> "$GITHUB_ENV"
 
       - name: List records (raw output for inspection)
         run: ./plesk-cli records list "$DOMAIN_ID" | jq '.'
