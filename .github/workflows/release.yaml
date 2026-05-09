@@ -27,6 +27,11 @@ jobs:
       - name: Generate CLI
         run: bashly generate
 
+      - name: Verify generated file
+        run: |
+          test -s plesk-cli || (echo "plesk-cli is empty or missing!" && exit 1)
+          wc -l plesk-cli
+
       - name: Prepare artifact
         run: |
           mkdir -p dist

@@ -1,6 +1,6 @@
 COOKIES=cookie.txt
 OPTIONS='-s'
-BASE_URL="https://dnshosting01.oblaci.rs:8443"
+BASE_URL="${PLESK_BASE_URL:-https://dnshosting01.oblaci.rs:8443}"
 
 log() {
     echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1"
