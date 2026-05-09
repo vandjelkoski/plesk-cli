@@ -44,8 +44,8 @@ jobs:
       - name: Find dummy record and update IP
         run: |
           RECORDS=$(./plesk-cli records list "$DOMAIN_ID")
-          RECORD_ID=$(echo "$RECORDS" | jq -r --arg h "$DUMMY_HOST" 'select(.displayHost==$h) | .id' | head -1)
-          CURRENT_IP=$(echo "$RECORDS" | jq -r --arg h "$DUMMY_HOST" 'select(.displayHost==$h) | .displayValue' | head -1)
+          RECORD_ID=$(echo "$RECORDS" | jq -r --arg h "$DUMMY_HOST" 'select(.host==$h) | .id' | head -1)
+          CURRENT_IP=$(echo "$RECORDS" | jq -r --arg h "$DUMMY_HOST" 'select(.host==$h) | .value' | head -1)
 
           if [ "$CURRENT_IP" = "192.0.2.1" ]; then TARGET_IP="192.0.2.2"; else TARGET_IP="192.0.2.1"; fi
 
@@ -61,7 +61,7 @@ jobs:
 
       - name: Verify IP change in records list
         run: |
-          UPDATED_IP=$(./plesk-cli records list "$DOMAIN_ID" | jq -r --arg h "$DUMMY_HOST" 'select(.displayHost==$h) | .displayValue' | head -1)
+          UPDATED_IP=$(./plesk-cli records list "$DOMAIN_ID" | jq -r --arg h "$DUMMY_HOST" 'select(.host==$h) | .value' | head -1)
           echo "Updated IP : $UPDATED_IP"
           echo "Expected IP: $TARGET_IP"
           [ "$UPDATED_IP" = "$TARGET_IP" ]
